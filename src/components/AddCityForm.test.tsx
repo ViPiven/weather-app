@@ -9,7 +9,8 @@ jest.mock('@/store/useCityStore')
 const getWeatherByCityMock = jest.fn()
 
 jest.mock('@/lib/api', () => ({
-  getWeatherByCity: (...args: any[]) => getWeatherByCityMock(...args),
+  getWeatherByCity: (...args: Parameters<typeof import('@/lib/api').getWeatherByCity>) =>
+    getWeatherByCityMock(...args),
 }))
 
 describe('AddCityForm', () => {
@@ -21,8 +22,16 @@ describe('AddCityForm', () => {
   })
 
   it('adds a city when input is filled and form is submitted', async () => {
-    const addCityMock = jest.fn();
-    (useCityStore as any).mockReturnValue({ addCity: addCityMock, cities: [] })
+    const addCityMock = jest.fn<void, [string]>()
+    const citiesMock: string[] = []
+
+    const mockedUseCityStore = useCityStore as jest.MockedFunction<typeof useCityStore>
+    mockedUseCityStore.mockReturnValue({
+      addCity: addCityMock,
+      removeCity: jest.fn(),
+      clearCities: jest.fn(),
+      cities: citiesMock,
+    })
 
     getWeatherByCityMock.mockResolvedValue({
       temp: 20,
@@ -57,8 +66,16 @@ describe('AddCityForm', () => {
   })
 
   it('shows an error when input is empty', async () => {
-    const addCityMock = jest.fn();
-    (useCityStore as any).mockReturnValue({ addCity: addCityMock, cities: [] })
+    const addCityMock = jest.fn<void, [string]>()
+    const citiesMock: string[] = []
+
+    const mockedUseCityStore = useCityStore as jest.MockedFunction<typeof useCityStore>
+    mockedUseCityStore.mockReturnValue({
+      addCity: addCityMock,
+      removeCity: jest.fn(),
+      clearCities: jest.fn(),
+      cities: citiesMock,
+    })
 
     render(
       <QueryClientProvider client={queryClient}>
@@ -74,8 +91,16 @@ describe('AddCityForm', () => {
   })
 
   it('shows error if city is already added', async () => {
-    const addCityMock = jest.fn();
-    (useCityStore as any).mockReturnValue({ addCity: addCityMock, cities: ['Kyiv'] })
+    const addCityMock = jest.fn<void, [string]>()
+    const citiesMock: string[] = ['Kyiv']
+
+    const mockedUseCityStore = useCityStore as jest.MockedFunction<typeof useCityStore>
+    mockedUseCityStore.mockReturnValue({
+      addCity: addCityMock,
+      removeCity: jest.fn(),
+      clearCities: jest.fn(),
+      cities: citiesMock,
+    })
 
     render(
       <QueryClientProvider client={queryClient}>

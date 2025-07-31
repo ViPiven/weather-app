@@ -13,7 +13,7 @@ import Box from '@mui/material/Box'
 import { MouseEvent } from 'react'
 import Image from 'next/image'
 
-type Props = {
+export type Props = {
   name: string
   temperature: number
   weatherDescription: string

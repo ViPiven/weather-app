@@ -3,6 +3,7 @@ import { CityItem } from './CityItem'
 import { useCityStore } from '@/store/useCityStore'
 import { getWeatherByCity } from '@/lib/api'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import type { Props as CityCardProps } from '@/components/CityCard'
 
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
@@ -16,9 +17,9 @@ jest.mock('@/lib/api', () => ({
 
 jest.mock('@/store/useCityStore')
 
-const mockCityCard = jest.fn(() => <div data-testid="mocked-card" />) as jest.Mock & React.FC<any>
+const mockCityCard = jest.fn((_props: CityCardProps) => <div data-testid="mocked-card" />)
 jest.mock('@/components/CityCard', () => ({
-  CityCard: (props: any) => mockCityCard(props),
+  CityCard: (props: CityCardProps) => mockCityCard(props),
 }))
 
 const createTestClient = () =>
@@ -32,9 +33,9 @@ describe('CityItem', () => {
   const removeCityMock = jest.fn()
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    const mockedUseCityStore = useCityStore as unknown as jest.Mock;
-    mockedUseCityStore.mockReturnValue({ removeCity: removeCityMock });
+    jest.clearAllMocks()
+    const mockedUseCityStore = useCityStore as unknown as jest.Mock
+    mockedUseCityStore.mockReturnValue({ removeCity: removeCityMock })
   })
 
   const renderWithProvider = (name: string) =>
@@ -48,7 +49,7 @@ describe('CityItem', () => {
     (getWeatherByCity as jest.Mock).mockImplementation(() => new Promise(() => {}))
     renderWithProvider('Kyiv')
 
-    const props = mockCityCard.mock.calls.at(-1)?.[0]
+    const props = mockCityCard.mock.calls.at(-1)?.[0] as CityCardProps
     expect(props).toMatchObject({
       name: 'Kyiv',
       isLoading: true,
@@ -66,8 +67,8 @@ describe('CityItem', () => {
     renderWithProvider('Kyiv')
 
     await waitFor(() => {
-      const lastCall = mockCityCard.mock.calls.at(-1)?.[0]
-      expect(lastCall).toMatchObject({
+      const props = mockCityCard.mock.calls.at(-1)?.[0] as CityCardProps
+      expect(props).toMatchObject({
         isError: true,
         isLoading: false,
       })
@@ -83,8 +84,8 @@ describe('CityItem', () => {
     renderWithProvider('Kyiv')
 
     await waitFor(() => {
-      const lastCall = mockCityCard.mock.calls.at(-1)?.[0]
-      expect(lastCall).toMatchObject({
+      const props = mockCityCard.mock.calls.at(-1)?.[0] as CityCardProps
+      expect(props).toMatchObject({
         isLoading: false,
         isError: false,
         temperature: 22,
@@ -103,9 +104,9 @@ describe('CityItem', () => {
     renderWithProvider('Kyiv')
 
     await waitFor(() => {
-      const props = mockCityCard.mock.calls.at(-1)?.[0]
+      const props = mockCityCard.mock.calls.at(-1)?.[0] as CityCardProps
       expect(props).toBeTruthy()
-      props.onRemove()
+      props.onRemove?.()
       expect(removeCityMock).toHaveBeenCalledWith('Kyiv')
     })
   })
@@ -125,10 +126,9 @@ describe('CityItem', () => {
     )
 
     await waitFor(() => {
-      const props = mockCityCard.mock.calls.at(-1)?.[0]
+      const props = mockCityCard.mock.calls.at(-1)?.[0] as CityCardProps
       expect(props).toBeTruthy()
-      expect(typeof props.onRefresh).toBe('function')
-      props.onRefresh()
+      props.onRefresh?.()
     })
   })
 })
