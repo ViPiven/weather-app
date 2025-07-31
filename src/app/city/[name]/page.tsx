@@ -69,7 +69,7 @@ export default function CityPage() {
       </Typography>
 
       <Grid container spacing={3} mb={4}>
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }} component={"div"}>
           <Paper
             elevation={3}
             sx={{
@@ -99,7 +99,7 @@ export default function CityPage() {
           </Paper>
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }} component={"div"}>
           <Paper elevation={3} sx={{ padding: 2, fontSize: 14 }}>
             <p>
               🌡️ Min/Max: {Math.round(weather.tempMin)}°C /{' '}
